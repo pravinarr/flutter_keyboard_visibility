@@ -37,6 +37,8 @@
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(didShow) name:UIKeyboardDidShowNotification object:nil];
 	[center addObserver:self selector:@selector(didHide) name:UIKeyboardWillHideNotification object:nil];
+	[center addObserver:self selector:@selector(willShow) name:UIKeyboardWillShowNotification object:nil];
+
     
     return self;
 }
@@ -50,6 +52,15 @@
 			self.flutterEventSink([NSNumber numberWithInt:1]);
 		}
     }
+}
+
+
+- (void)willShow
+{
+    // if state changed and we have a subscriber, let him know
+		if (self.flutterEventListening) {
+			self.flutterEventSink([NSNumber numberWithInt:2]);
+		}
 }
 
 - (void)didHide

@@ -41,11 +41,10 @@ class _KeyboardVisibilityExampleState extends State<KeyboardVisibilityExample> {
     _keyboardState = _keyboardVisibility.isKeyboardVisible;
 
     _keyboardVisibilitySubscriberId = _keyboardVisibility.addNewListener(
-      onChange: (bool visible) {
-        setState(() {
-          _keyboardState = visible;
-        });
-      },
+      
+      willShowFunc: (bool value){
+        print(value);
+      }
     );
   }
 

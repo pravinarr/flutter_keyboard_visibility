@@ -16,10 +16,14 @@ class KeyboardVisibilitySubscriber {
   /// Called when the keyboard closes
   final Function onHide;
 
+  final Function willShow;
+  
+
   /// Constructs a new [KeyboardVisibilitySubscriber]
   KeyboardVisibilitySubscriber({
     this.onChange,
     this.onShow,
+    this.willShow,
     this.onHide});
 }
 
@@ -32,6 +36,7 @@ class KeyboardVisibilityNotification {
 
   /// The current state of the keyboard visibility. Can be used without subscribing
   bool isKeyboardVisible = false;
+  bool willShow = false;
 
 
   /// Constructs a new [KeyboardVisibilityNotification]
@@ -43,6 +48,7 @@ class KeyboardVisibilityNotification {
   /// Internal function to handle native code channel communication
   void onKeyboardEvent(dynamic arg) {
     isKeyboardVisible = (arg as int) == 1;
+    willShow = (arg as int) ==2; 
 
     // send a message to all subscribers notifying them about the new state
     _list.forEach((subscriber, s) {
@@ -55,6 +61,10 @@ class KeyboardVisibilityNotification {
       if ((s.onHide != null) && !isKeyboardVisible) {
         s.onHide();
       }
+
+      if ((s.willShow != null) && willShow) {
+        s.willShow(willShow);
+      }
     });
   }
 
@@ -63,9 +73,9 @@ class KeyboardVisibilityNotification {
   /// [onShow] is called when the keyboard appears
   /// [onHide] is called when the keyboard disappears
   /// Returns a subscribing id that can be used to unsubscribe
-  int addNewListener({Function(bool) onChange, Function onShow, Function onHide}) {
+  int addNewListener({Function(bool) onChange, Function onShow, Function onHide, Function willShowFunc}) {
 
-    _list[_currentIndex] = KeyboardVisibilitySubscriber(onChange: onChange, onShow: onShow, onHide: onHide);
+    _list[_currentIndex] = KeyboardVisibilitySubscriber(onChange: onChange, onShow: onShow, onHide: onHide, willShow: willShowFunc);
     return _currentIndex++;
   }
 
